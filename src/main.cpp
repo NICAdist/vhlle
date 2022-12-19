@@ -46,7 +46,7 @@ using namespace std;
 int nx, ny, nz, eosType, etaSparam = 0,zetaSparam = 0;
 int eosTypeHadron = 0;
 double xmin, xmax, ymin, ymax, etamin, etamax, tau0, tauMax, tauResize, dtau;
-string collSystem, outputDir, isInputFile;
+string collSystem, outputDir, isInputFile, configRootDir;
 double etaS, zetaS, eCrit, eEtaSMin, al, ah, aRho, T0, etaSMin;
 int icModel,glauberVariable =1;  // icModel=1 for pure Glauber, 2 for table input (Glissando etc)
 double epsilon0, Rgt, Rgz, impactPar, s0ScaleFactor;
@@ -203,14 +203,19 @@ void readCommandLine(int argc, char** argv)
    if(strcmp(argv[iarg],"-params")==0) readParameters(argv[iarg+1]);
    if(strcmp(argv[iarg],"-ISinput")==0) isInputFile = argv[iarg+1];
    if(strcmp(argv[iarg],"-outputDir")==0) outputDir = argv[iarg+1];
+   if(strcmp(argv[iarg],"-configDir")==0) configRootDir = argv[iarg+1];
   }
   cout << "vhlle: command line parameters are:\n";
   cout << "collision system:  " << collSystem << endl;
   cout << "ini.state input:  " << isInputFile << endl;
   cout << "output directory:  " << outputDir << endl;
- }
+  if (configRootDir.length()){ // if user has provided path, use it
+    cout << "config directory:  " << configRootDir << endl;
+    if (configRootDir.back() != '/') // if last character is not /, add it
+      configRootDir = configRootDir+'/';
+   } 
+  }
 }
-
 
 Fluid* expandGrid2x(Hydro* h, EoS* eos, EoS* eosH, TransportCoeff *trcoeff) {
  Fluid* f = h->getFluid();
@@ -253,6 +258,7 @@ int main(int argc, char **argv) {
  Fluid *f;
  Hydro *h;
  time_t start = 0, end;
+ configRootDir = ""; // variable containing path to eos, ic, param directory if provided
 
  time(&start);
 
@@ -265,13 +271,16 @@ int main(int argc, char **argv) {
  switch (eosType)
  {
  case 0:
-  eos = new EoSs("eos/Laine_nf3.dat", 3);
-  break;
+ {
+  std::string fullPath = configRootDir + "eos/Laine_nf3.dat";
+  eos = new EoSs(fullPath.c_str(), 3);
+ }
+ break;
  case 1:
-  eos = new EoSChiral();
+  eos = new EoSChiral(configRootDir);
   break;
  case 2:
-  eos = new EoSAZH();
+  eos = new EoSAZH(configRootDir);
   break;
  default:
   cout << "unsupported eosType (" << eosType << ")\n";
@@ -282,10 +291,17 @@ int main(int argc, char **argv) {
  switch (eosTypeHadron)
  {
  case 0:
-  eosH = new EoSHadron((char *)"eos/eosHadronLog.dat"); // PDG hadronic EoS
+ {
+  std::string fullPath = configRootDir + "eos/eosHadronLog.dat";
+  eosH = new EoSHadron(fullPath.c_str()); // PDG hadronic EoS
+ }
   break;
  case 1:
-  eosH = new EoSSmash((char *)"eos/hadgas_eos_SMASH.dat", 101, 51, 51); // SMASH hadronic EoS
+ {
+  std::string fullPath = configRootDir + "eos/hadgas_eos_SMASH.dat";
+
+  eosH = new EoSSmash(configRootDir.c_str(), 101, 51, 51); // SMASH hadronic EoS
+ }
  default:
   cout << "Unknown haronic EoS type for hypersurface creation (" << eosTypeHadron << ").\n"
        << "eosTypeHadron should be either \"0\" (PDG hadronic EoS) or "

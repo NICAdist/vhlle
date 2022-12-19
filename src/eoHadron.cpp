@@ -10,7 +10,7 @@
 
 using namespace std;
 
-EoSHadron::EoSHadron(char *filename) {
+EoSHadron::EoSHadron(const char *filename) {
  ifstream fin(filename);
  if (!fin.good()) {
   cout << "I/O error with " << filename << endl;

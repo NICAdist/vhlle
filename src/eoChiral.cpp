@@ -153,9 +153,24 @@ double EoSaux::p(double e, double nb) {
  // cout <<  e <<" "<< nb <<" "<< nq <<" "<< ns <<" "<< _T<<endl;
 }
 
-EoSChiral::EoSChiral() {
- eosbig = new EoSaux("eos/chiraleos.dat", 2001, 401);
- eossmall = new EoSaux("eos/chiralsmall.dat", 201, 201);
+EoSChiral::EoSChiral()
+{
+ std::string eosPath = "";
+ InitEoSChiral(eosPath);
+}
+
+EoSChiral::EoSChiral(std::string &eosPath)
+{
+  InitEoSChiral(eosPath);
+}
+
+void EoSChiral::InitEoSChiral(std::string &eosPath)
+{
+ std::string fullPath;
+ fullPath = eosPath + "eos/chiraleos.dat";
+ eosbig = new EoSaux(fullPath.c_str(), 2001, 401);
+ fullPath = eosPath + "eos/chiralsmall.dat";
+ eossmall = new EoSaux(fullPath.c_str(), 201, 201);
 }
 
 EoSChiral::~EoSChiral() {

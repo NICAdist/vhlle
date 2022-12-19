@@ -15,7 +15,7 @@ class EoSSmash : public EoS {
   }
 
 public:
- EoSSmash(char* filename, int Ne, int Nnb, int Nq);
+ EoSSmash(const char* filename, int Ne, int Nnb, int Nq);
  ~EoSSmash(void);
 
  // Set (T, muB, muQ, muS, p) from (e, nb, nq, ns) according to EoS

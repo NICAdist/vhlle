@@ -11,7 +11,7 @@ class EoSHadron : public EoS {
  }
 
 public:
- EoSHadron(char *filename);
+ EoSHadron(const char *filename);
  ~EoSHadron(void);
 
  virtual void eos(double e, double nb, double nq, double ns, double &_T,

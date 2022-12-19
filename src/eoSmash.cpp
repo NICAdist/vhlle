@@ -6,7 +6,7 @@
 
 using namespace std;
 
-EoSSmash::EoSSmash(char* filename, int Ne, int Nnb, int Nq) {
+EoSSmash::EoSSmash(const char* filename, int Ne, int Nnb, int Nq) {
   ifstream fin(filename);
   if (!fin.good()) {
    cout << "I/O error with " << filename << endl;

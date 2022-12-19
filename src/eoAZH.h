@@ -6,9 +6,12 @@ private:
 
 public:
  EoSAZH(void);
+ EoSAZH(std::string & eosPath);
  ~EoSAZH(void);
 
  virtual void eos(double e, double nb, double nq, double ns, double &_T,
                   double &_mub, double &_muq, double &_mus, double &_p);
  virtual double p(double e, double nb, double nq, double ns);
+private:
+ void InitEoSAZH(std::string & eosPath);
 };

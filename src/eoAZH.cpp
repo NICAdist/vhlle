@@ -102,16 +102,36 @@ double EoSAZHaux::getLow(double e, double nb) {
  return value * e / emin;
 }
 
-EoSAZH::EoSAZH() {
- p1 = new EoSAZHaux("eos/azhydro0p2/aa1_p.dat");
- p2 = new EoSAZHaux("eos/azhydro0p2/aa2_p.dat");
- T1 = new EoSAZHaux("eos/azhydro0p2/aa1_t.dat");
- T2 = new EoSAZHaux("eos/azhydro0p2/aa2_t.dat");
- mu1 = new EoSAZHaux("eos/azhydro0p2/aa1_mb.dat");
- mu2 = new EoSAZHaux("eos/azhydro0p2/aa2_mb.dat");
+EoSAZH::EoSAZH()
+{
+ std::string fullPath = "";
+ InitEoSAZH(fullPath);
 }
 
-EoSAZH::~EoSAZH() {
+EoSAZH::EoSAZH(std::string &eosPath)
+{
+ InitEoSAZH(eosPath);
+}
+
+void EoSAZH::InitEoSAZH(std::string &eosPath)
+{
+ std::string fullPath;
+ fullPath = eosPath + "eos/azhydro0p2/aa1_p.dat";
+ p1 = new EoSAZHaux(fullPath.c_str());
+ fullPath = eosPath + "eos/azhydro0p2/aa2_p.dat";
+ p2 = new EoSAZHaux(fullPath.c_str());
+ fullPath = eosPath + "eos/azhydro0p2/aa1_t.dat";
+ T1 = new EoSAZHaux(fullPath.c_str());
+ fullPath = eosPath + "eos/azhydro0p2/aa2_t.dat";
+ T2 = new EoSAZHaux(fullPath.c_str());
+ fullPath = eosPath + "eos/azhydro0p2/aa1_mb.dat";
+ mu1 = new EoSAZHaux(fullPath.c_str());
+ fullPath = eosPath + "eos/azhydro0p2/aa2_mb.dat";
+ mu2 = new EoSAZHaux(fullPath.c_str());
+}
+
+EoSAZH::~EoSAZH()
+{
  delete p1;
  delete p2;
  delete T1;
