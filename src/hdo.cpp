@@ -583,7 +583,7 @@ void Hydro::NSquant(int ix, int iy, int iz, double pi[4][4], double &Pi,
 }
 
 void Hydro::setNSvalues() {
- double e, p, nb, nq, ns, vx, vy, vz, piNS[4][4], PiNS, dmu[4][4], du;
+ double e, p, nb, nq, ns, vx, vy, vz, piNS[4][4], PiNS; // ,dmu[4][4], du
  for (int ix = 0; ix < f->getNX(); ix++)
   for (int iy = 0; iy < f->getNY(); iy++)
    for (int iz = 0; iz < f->getNZ(); iz++) {
@@ -886,12 +886,19 @@ void Hydro::visc_flux(Cell *left, Cell *right, int direction) {
  // exit if noth cells are not full with matter
  if (left->getM(direction) < 1. && right->getM(direction) < 1.) return;
 
- if (direction == X_)
+ switch (direction)
+ {
+ case X_:
   dxa = f->getDx();
- else if (direction == Y_)
+  break;
+ case Y_:
   dxa = f->getDy();
- else if (direction == Z_)
+  break;
+ case Z_:
   dxa = f->getDz() * (tau + 0.5 * dt);
+  break;
+ }
+
  double e, p, nb, nq, ns, vxl, vyl, vzl, vxr, vyr, vzr;
  // we need to know the velocities at both cell centers at (n+1/2) in order to
  // interpolate to
@@ -910,13 +917,18 @@ void Hydro::visc_flux(Cell *left, Cell *right, int direction) {
  double gamma = 1. / sqrt(1. - v * v);
  double uuu[4] = {gamma, gamma * vxl, gamma * vyl, gamma * vzl};
  double gmumu[4] = {1., -1., -1., -1.};
+#if 0
  if (direction == X_)
   ind2 = 1;
  else if (direction == Y_)
   ind2 = 2;
  else if (direction == Z_)
   ind2 = 3;
- for (int ind1 = 0; ind1 < 4; ind1++) {
+#else
+ ind2 = direction;
+#endif
+ for (int ind1 = 0; ind1 < 4; ind1++)
+ {
   flux[ind1] = 0.5 * (left->getpiH(ind1, ind2) + right->getpiH(ind1, ind2));
   if (ind1 == ind2)
    flux[ind1] += -0.5 * (left->getPiH() + right->getPiH()) *

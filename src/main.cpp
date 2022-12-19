@@ -165,21 +165,24 @@ void printParameters() {
  cout << "e_crit = " << eCrit << endl;
  cout << "zeta/s param : " << zetaSparam << endl;
  cout << "etaSparam = " << etaSparam << endl;
- if (etaSparam == 0){
-    cout << "eta/s = " << etaS << endl;
- }
- else if (etaSparam == 1){
-    cout << "al = " << al << endl;
-    cout << "ah = " << ah << endl;
-    cout << "etaSMin = " << etaSMin << endl;
-    cout << "T0 = " << T0 << endl;
- }
- else if (etaSparam == 2){
-    cout << "al = " << al << endl;
-    cout << "ah = " << ah << endl;
-    cout << "aRho = " << aRho << endl;
-    cout << "etaSMin = " << etaSMin << endl;
-    cout << "eEtaSMin = " << eEtaSMin << endl;
+ switch (etaSparam)
+ {
+ case 0:
+  cout << "eta/s = " << etaS << endl;
+  break;
+ case 1:
+  cout << "al = " << al << endl;
+  cout << "ah = " << ah << endl;
+  cout << "etaSMin = " << etaSMin << endl;
+  cout << "T0 = " << T0 << endl;
+  break;
+ case 2:
+  cout << "al = " << al << endl;
+  cout << "ah = " << ah << endl;
+  cout << "aRho = " << aRho << endl;
+  cout << "etaSMin = " << etaSMin << endl;
+  cout << "eEtaSMin = " << eEtaSMin << endl;
+  break;
  }
  cout << "zeta/s = " << zetaS << endl;
  cout << "epsilon0 = " << epsilon0 << endl;
@@ -259,29 +262,36 @@ int main(int argc, char **argv) {
  printParameters();
 
  // EoS for hydro evolution
- if (eosType == 0)
+ switch (eosType)
+ {
+ case 0:
   eos = new EoSs("eos/Laine_nf3.dat", 3);
- else if (eosType == 1)
+  break;
+ case 1:
   eos = new EoSChiral();
- else if (eosType == 2)
+  break;
+ case 2:
   eos = new EoSAZH();
- else {
-  cout << "eosType != 0,1,2\n";
+  break;
+ default:
+  cout << "unsupported eosType (" << eosType << ")\n";
   return 0;
  }
 
  // hadronic EoS for hypersurface creation
- if (eosTypeHadron == 0) {
-   eosH = new EoSHadron((char*)"eos/eosHadronLog.dat"); //PDG hadronic EoS
- } else if (eosTypeHadron == 1) {
-   eosH = new EoSSmash((char*)"eos/hadgas_eos_SMASH.dat", 101, 51, 51); //SMASH hadronic EoS
- } else {
-   cout << "Unknown haronic EoS type for hypersurface creation.\n" <<
-           "eosTypeHadron should be either \"0\" (PDG hadronic EoS) or " <<
-           "\"1\" (SMASH hadronic EoS).\n";
-   return 0;
+ switch (eosTypeHadron)
+ {
+ case 0:
+  eosH = new EoSHadron((char *)"eos/eosHadronLog.dat"); // PDG hadronic EoS
+  break;
+ case 1:
+  eosH = new EoSSmash((char *)"eos/hadgas_eos_SMASH.dat", 101, 51, 51); // SMASH hadronic EoS
+ default:
+  cout << "Unknown haronic EoS type for hypersurface creation (" << eosTypeHadron << ").\n"
+       << "eosTypeHadron should be either \"0\" (PDG hadronic EoS) or "
+       << "\"1\" (SMASH hadronic EoS).\n";
+  return 0;
  }
-
 
  // transport coefficients
  trcoeff = new TransportCoeff(etaS, zetaS, zetaSparam, eos, etaSparam, ah, al, aRho, T0, etaSMin, eEtaSMin);

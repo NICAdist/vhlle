@@ -146,7 +146,7 @@ void ICGlauber::setIC(Fluid *f, EoS *eos) {
 
 double ICGlauber::Thickness(double *x, double *p) {
  // p[0]: Ra radius; p[1]: delta = 0.54fm
- double intgrl, prms[4];
+ double intgrl; /*, prms[4]; */
  TF1 *iff = 0;
  iff = new TF1("WoodSaxonDF", this, &ICGlauber::WoodSaxon, -3.0 * p[0],
                3.0 * p[0], 4, "IC", "WoodSaxon");

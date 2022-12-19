@@ -1,5 +1,6 @@
 #include <iostream>
 #include <iomanip>
+#include <limits>
 #include "eos.h"
 #include "trancoeff.h"
 #include "inc.h"
@@ -42,30 +43,30 @@ double TransportCoeff::zetaS(double e, double T)
  double B1=0.01;
  double B2=0.12;
 
- if(zetaSparam==0)
-    return zetaS0 * (1. / 3. - eos->cs2(e)) / (exp((0.16 - T) / 0.001) + 1.);
- else if(zetaSparam==1)
+ switch (zetaSparam)
  {
-    if(T<0.180)
-       return 0.03+(0.08*exp(((T/T_p)-1.)/(0.0025)))+(0.22*exp(((T/T_p)-1)/(0.0022)));
-    else if(T>=0.180 && T<0.200)
-       return 27.55*(T/T_p)-13.45-(13.77*(T/T_p)*(T/T_p));
-    else if(T>=0.200)
-       return 0.001+(0.9*exp(-((T/T_p)-1.)/(0.0025)))+(0.25*exp(-((T/T_p)-1.)/(0.13)));
- }
- else if(zetaSparam==2)
- {
-    if(T>T_peak)
-       return B_norm*((B_width*B_width)/((((T/T_peak)-1.)*((T/T_peak)-1.))+(B_width*B_width)));
-    else if(T<=T_peak)
-       return B_norm*(exp(-((T-T_peak)/T_width)*((T-T_peak)/T_width)));
- }
- else if(zetaSparam==3)
- {
-    if(T<T_peak2)
-       return B_norm2*exp(-((T-T_peak2)*(T-T_peak2)/(B1*B1)));
-    else if(T>=T_peak2)
-       return B_norm2*exp(-((T-T_peak2)*(T-T_peak2)/(B2*B2)));
+ case 0:
+  return zetaS0 * (1. / 3. - eos->cs2(e)) / (exp((0.16 - T) / 0.001) + 1.);
+ case 1:
+  if (T < 0.180)
+     return 0.03 + (0.08 * exp(((T / T_p) - 1.) / (0.0025))) + (0.22 * exp(((T / T_p) - 1) / (0.0022)));
+  else if (T < 0.200) // (T>=0.180 && T<0.200)
+     return 27.55 * (T / T_p) - 13.45 - (13.77 * (T / T_p) * (T / T_p));
+  else // if(T>=0.200)
+     return 0.001 + (0.9 * exp(-((T / T_p) - 1.) / (0.0025))) + (0.25 * exp(-((T / T_p) - 1.) / (0.13)));
+ case 2:
+  if (T > T_peak)
+     return B_norm * ((B_width * B_width) / ((((T / T_peak) - 1.) * ((T / T_peak) - 1.)) + (B_width * B_width)));
+  else // if(T<=T_peak)
+     return B_norm * (exp(-((T - T_peak) / T_width) * ((T - T_peak) / T_width)));
+ case 3:
+  if (T < T_peak2)
+     return B_norm2 * exp(-((T - T_peak2) * (T - T_peak2) / (B1 * B1)));
+  else // if(T>=T_peak2)
+     return B_norm2 * exp(-((T - T_peak2) * (T - T_peak2) / (B2 * B2)));
+ default: // if
+  std::cerr << "TransportCoeff::zetaS(double e, double T): undefined zetaSparam value";
+  return std::numeric_limits<double>::max();
  }
 }
 
@@ -76,15 +77,18 @@ void TransportCoeff::getEta(double e, double rho, double T, double &_etaS, doubl
 
 double TransportCoeff::etaS(double e,double rho, double T)
 {
-  if (etaSparam == 0){
-      return etaS0;
-  }
-  else if (etaSparam == 1){
-      return etaSMin +  ((T>T0) ? ah*(T-T0) :  al*(T-T0));
-  }
-  else if (etaSparam == 2){
-      return std::max(0.0, etaSMin + ((e>eEtaSMin) ? ( (ah*(e-eEtaSMin)+aRho*rho) ): al*(e-eEtaSMin)+aRho*rho));
-  }
+ switch (etaSparam)
+ {
+ case 0:
+  return etaS0;
+ case 1:
+  return etaSMin + ((T > T0) ? ah * (T - T0) : al * (T - T0));
+ case 2:
+  return std::max(0.0, etaSMin + ((e > eEtaSMin) ? ((ah * (e - eEtaSMin) + aRho * rho)) : al * (e - eEtaSMin) + aRho * rho));
+ default:
+  std::cerr << "TransportCoeff::etaS(double e,double rho, double T): undefined etaSparam value";
+  return std::numeric_limits<double>::max();
+ }
 }
 
 void TransportCoeff::getTau(double e, double rho, double T, double &_taupi, double &_tauPi) {

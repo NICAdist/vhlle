@@ -147,10 +147,10 @@ IcGlissando::IcGlissando(Fluid* f, const char* filename, double _tau0, const cha
   if (instream.fail() && np > 0) {
    // cout<<"readF14:instream: failure reading data\n" ;
    // cout<<"stream = "<<instream.str()<<endl ;
-   if (nevents % 1 == 0) {
-    //cout << "event = " << nevents << "  np = " << np << "\n";
-    //cout << flush;
-   }
+   /*if (nevents % 1 == 0) {
+    cout << "event = " << nevents << "  np = " << np << "\n";
+    cout << flush;
+   }*/
    makeSmoothTable(np);
    np_tot += np;
    np = 0;
@@ -229,7 +229,7 @@ void IcGlissando::makeSmoothTable(int npart) {
       double tilt = C[ip]>0 ? 0.5*(etaM + eta)/etaM : 0.5*(etaM - eta)/etaM;
       tilt = std::max(0.0, tilt);
       tilt = std::min(1.0, tilt);
-      double baryonGaussian;
+      double baryonGaussian = 1.0;
       if (sNN < 100) {
        baryonGaussian = C[ip]>0 ? exp(-pow(eta - neta0, 2)/(2. * nsigma * nsigma)) : exp(-pow(eta + neta0, 2)/(2. * nsigma * nsigma)) ;
        baryonGaussian /= nsigma*sqrt(2*C_PI);
