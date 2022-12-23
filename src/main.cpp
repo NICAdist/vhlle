@@ -295,15 +295,16 @@ int main(int argc, char **argv) {
   std::string fullPath = configRootDir + "eos/eosHadronLog.dat";
   eosH = new EoSHadron(fullPath.c_str()); // PDG hadronic EoS
  }
-  break;
+ break;
  case 1:
  {
   std::string fullPath = configRootDir + "eos/hadgas_eos_SMASH.dat";
 
   eosH = new EoSSmash(configRootDir.c_str(), 101, 51, 51); // SMASH hadronic EoS
  }
+ break;
  default:
-  cout << "Unknown haronic EoS type for hypersurface creation (" << eosTypeHadron << ").\n"
+  cout << "Unknown hadronic EoS type for hypersurface creation (" << eosTypeHadron << ").\n"
        << "eosTypeHadron should be either \"0\" (PDG hadronic EoS) or "
        << "\"1\" (SMASH hadronic EoS).\n";
   return 0;
